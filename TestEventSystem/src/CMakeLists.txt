@@ -1,0 +1,1 @@
+add_executable(TestEventSystem "main.c" "main.h")

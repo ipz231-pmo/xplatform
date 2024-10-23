@@ -10,6 +10,14 @@ Shader::Shader(std::string vertexFile, std::string fragmentFile)
 	std::stringstream fsBuff;
 	vsStream.open(vertexFile);
 	fsStream.open(fragmentFile);
+
+	if (!vsStream) {
+		std::cerr << "Failed to open " << vertexFile << "\n";
+	}
+	if (!fsStream) {
+		std::cerr << "Failed to open " << fragmentFile << "\n";
+	}
+
 	vsBuff << vsStream.rdbuf();
 	fsBuff << fsStream.rdbuf();
 	std::string vsStr = vsBuff.str();

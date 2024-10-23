@@ -5,4 +5,7 @@ add_subdirectory("libs")
 add_subdirectory("sfml")
 add_subdirectory("glh")
 
-add_subdirectory("demo1")
+
+add_subdirectory("BlockOutlining")
+add_subdirectory("TestEventSystem")
+#add_subdirectory("demo1")

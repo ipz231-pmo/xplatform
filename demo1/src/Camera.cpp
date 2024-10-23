@@ -1,6 +1,6 @@
-#include "Engine/Camera.hpp"
+#include "Camera.hpp"
 
-engine::Camera::Camera() :
+Camera::Camera() :
 	m_ZNear(0.1f), m_ZFar(100.0f), 
 	m_windowWidth(800), m_windowHeight(600), 
 	m_fovy(glm::radians(60.0f)),
@@ -13,32 +13,32 @@ engine::Camera::Camera() :
 	_updateProjectionMatrix();
 }
 
-void engine::Camera::setTranslation(glm::vec3 translation)
+void Camera::setTranslation(glm::vec3 translation)
 {
 	m_translation = translation;
 	_updateViewMatrix();
 }
-void engine::Camera::translate(glm::vec3 offset)
+void Camera::translate(glm::vec3 offset)
 {
 	m_translation += offset;
 	_updateViewMatrix();
 }
-void engine::Camera::setRotation(float yaw, float pitch)
+void Camera::setRotation(float yaw, float pitch)
 {
 	m_yaw = yaw;
 	m_pitch = pitch;
 	_updateViewMatrix();
 }
-void engine::Camera::rotate(float deltaYaw, float deltaPitch)
+void Camera::rotate(float deltaYaw, float deltaPitch)
 {
 	m_yaw += deltaYaw;
-	if (m_yaw > 6.28 || m_yaw < 0) m_yaw = 0;
+	//if (m_yaw > 6.28 || m_yaw < 0) m_yaw = 0;
 	m_pitch += deltaPitch;
 	if (m_pitch > 1.5) m_pitch = 1.5;
 	if (m_pitch < -1.5) m_pitch = -1.5;
 	_updateViewMatrix();
 }
-void engine::Camera::_updateViewMatrix()
+void Camera::_updateViewMatrix()
 {
 	glm::vec3 dir(1.0f);
 	dir.x = cos(m_yaw) * cos(m_pitch);
@@ -53,19 +53,19 @@ void engine::Camera::_updateViewMatrix()
 
 	m_viewMatrix = glm::lookAt(m_translation, m_translation + dir, glm::vec3(0.0f, 1.0f, 0.0f));
 }
-glm::vec3 engine::Camera::getTranslation()
+glm::vec3 Camera::getTranslation()
 {
 	return m_translation;
 }
-float engine::Camera::getYaw()
+float Camera::getYaw()
 {
 	return m_yaw;
 }
-float engine::Camera::getPitch()
+float Camera::getPitch()
 {
 	return m_pitch;
 }
-glm::vec3 engine::Camera::getDirection()
+glm::vec3 Camera::getDirection()
 {
 	glm::vec3 dir(1.0f);
 	dir.x = cos(m_yaw) * cos(m_pitch);
@@ -74,49 +74,49 @@ glm::vec3 engine::Camera::getDirection()
 	return dir;
 }
 
-void engine::Camera::setWindowSize(int w, int h)
+void Camera::setWindowSize(int w, int h)
 {
 	m_windowWidth = w;
 	m_windowHeight = h;
 	_updateProjectionMatrix();
 }
-void engine::Camera::_updateProjectionMatrix()
+void Camera::_updateProjectionMatrix()
 {
 	m_projectionMatrix = glm::perspective(m_fovy, (float)m_windowWidth / m_windowHeight, m_ZNear, m_ZFar);
 }
-void engine::Camera::setClippingPlanes(float znear, float zfar)
+void Camera::setClippingPlanes(float znear, float zfar)
 {
 	m_ZNear = znear;
 	m_ZFar = zfar;
 	_updateProjectionMatrix();
 }
-void engine::Camera::setFovy(float fovy)
+void Camera::setFovy(float fovy)
 {
 	m_fovy = fovy;
 	_updateProjectionMatrix();
 }
-glm::vec2 engine::Camera::getWindowSize()
+glm::vec2 Camera::getWindowSize()
 {
-		return glm::vec2(m_windowWidth, m_windowHeight);
+	return glm::vec2(m_windowWidth, m_windowHeight);
 }
-float engine::Camera::getNearClippingPlane()
+float Camera::getNearClippingPlane()
 {
 	return m_ZNear;
 }
-float engine::Camera::getFarClippingPlane()
+float Camera::getFarClippingPlane()
 {
 	return m_ZFar;
 }
-float engine::Camera::getFovy()
+float Camera::getFovy()
 {
 	return m_fovy;
 }
 
-glm::mat4 engine::Camera::getViewMatrix()
+glm::mat4 Camera::getViewMatrix()
 {
 	return m_viewMatrix;
 }
-glm::mat4 engine::Camera::getProjectionMatrix()
+glm::mat4 Camera::getProjectionMatrix()
 {
 	return m_projectionMatrix;
 }

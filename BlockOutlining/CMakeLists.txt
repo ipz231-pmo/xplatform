@@ -1,8 +1,8 @@
-project(demo1)
+project(BlockOutlining)
 
 set(INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/)
 
-add_executable(${PROJECT_NAME} "src/main.cpp" "src/Block.cpp" "src/Chunk.cpp" "src/Camera.cpp"  "src/World.cpp" "src/BlockManager.cpp")
+add_executable(${PROJECT_NAME} "src/main.cpp")
 
 target_include_directories(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/include/")
 target_link_libraries(${PROJECT_NAME} sfml-graphics sfml-window sfml-system sfml-network sfml-audio)

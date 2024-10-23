@@ -9,55 +9,56 @@ void init() {
 	context.minorVersion = 3;
 	context.depthBits = 24;
 
+
 	wnd = new sf::RenderWindow(sf::VideoMode(800, 600), "WND Title", 7U, context);
+	wnd->setMouseCursorVisible(0);
 	gladLoadGL();
 	unlitShader = new Shader(SHADERS_DIR + "/unlitShader.vert", SHADERS_DIR + "/unlitShader.frag");
 	timer = new sf::Clock();
-	camera = new engine::Camera();
+	camera = new Camera();
 	camera->translate(glm::vec3(0.0f, 0.0f, 2.0f));
 	camera->rotate(glm::radians(270.0f), 0);
-	chunk = new engine::Chunk();
+	chunk = new Chunk();
 
 	for (int x = 0; x < 16; x++)
 	{
 		for (int z = 0; z < 16; z++)
 		{
-			chunk->setBlock(x, 0, z, new engine::Block(engine::Block::grass));
+			chunk->setBlock(x, 0, z, new Block(Block::grass));
 			if(x % 2 == 0)
-				chunk->setBlock(x, 0, z, new engine::Block(engine::Block::dirt));
+				chunk->setBlock(x, 0, z, new Block(Block::dirt));
 		}
 	}
 
-	chunk->setBlock(8, 8, 10, new engine::Block(engine::Block::grass));
+	chunk->setBlock(8, 8, 10, new Block(Block::grass));
 
-	engine::Block::unlitShader = unlitShader;
-	engine::Block::unlitVAO = &unlitVAO;
-	engine::Chunk::unlitShader = unlitShader;
-	for (int key = 0; key < sf::Keyboard::Key::KeyCount; key++)
+	Block::unlitShader = unlitShader;
+	Block::unlitVAO = &unlitVAO;
+	Chunk::unlitShader = unlitShader;
+
+	for (int key = sf::Keyboard::Key::A; key < sf::Keyboard::Key::KeyCount; key++)
 	{
 		keysPressed[static_cast<sf::Keyboard::Key>(key)] = false;
 	}
-
-	//std::cout << "Dirt" textures["dirt"] << "\n";
 
 
 	initGL();
 	initTextures();
 
-	engine::Block::BACK_SIDE_TEXTURES[engine::Block::dirt] = textures["dirt"];
-	engine::Block::FRONT_SIDE_TEXTURES[engine::Block::dirt] = textures["dirt"];
-	engine::Block::LEFT_SIDE_TEXTURES[engine::Block::dirt] = textures["dirt"];
-	engine::Block::RIGHT_SIDE_TEXTURES[engine::Block::dirt] = textures["dirt"];
-	engine::Block::TOP_SIDE_TEXTURES[engine::Block::dirt] = textures["dirt"];
-	engine::Block::BOTTOM_SIDE_TEXTURES[engine::Block::dirt] = textures["dirt"];
+	Block::BACK_SIDE_TEXTURES[Block::dirt] = textures["dirt"];
+	Block::FRONT_SIDE_TEXTURES[Block::dirt] = textures["dirt"];
+	Block::LEFT_SIDE_TEXTURES[Block::dirt] = textures["dirt"];
+	Block::RIGHT_SIDE_TEXTURES[Block::dirt] = textures["dirt"];
+	Block::TOP_SIDE_TEXTURES[Block::dirt] = textures["dirt"];
+	Block::BOTTOM_SIDE_TEXTURES[Block::dirt] = textures["dirt"];
 
-	engine::Block::BACK_SIDE_TEXTURES[engine::Block::grass] = textures["grass_side"];
-	engine::Block::FRONT_SIDE_TEXTURES[engine::Block::grass] = textures["grass_side"];
-	engine::Block::LEFT_SIDE_TEXTURES[engine::Block::grass] = textures["grass_side"];
-	engine::Block::RIGHT_SIDE_TEXTURES[engine::Block::grass] = textures["grass_side"];
+	Block::BACK_SIDE_TEXTURES[Block::grass] = textures["grass_side"];
+	Block::FRONT_SIDE_TEXTURES[Block::grass] = textures["grass_side"];
+	Block::LEFT_SIDE_TEXTURES[Block::grass] = textures["grass_side"];
+	Block::RIGHT_SIDE_TEXTURES[Block::grass] = textures["grass_side"];
 
-	engine::Block::TOP_SIDE_TEXTURES[engine::Block::grass] = textures["grass_top"];
-	engine::Block::BOTTOM_SIDE_TEXTURES[engine::Block::grass] = textures["dirt"];
+	Block::TOP_SIDE_TEXTURES[Block::grass] = textures["grass_top"];
+	Block::BOTTOM_SIDE_TEXTURES[Block::grass] = textures["dirt"];
 }
 
 void initGL()
@@ -144,66 +145,18 @@ void initTextures()
 	}
 }
 
+
+
 void loop() {
 	while (wnd->isOpen())
 	{
 		deltaTime = timer->getElapsedTime().asMilliseconds();
 		timer->restart();
-		
-		cursorMoveOffsetX = 0;
-		cursorMoveOffsetY = 0;
 
-		sf::Event e;
-		while (wnd->pollEvent(e))
-		{
-			if (e.type == sf::Event::Closed) wnd->close();
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) 
-				camera->rotate(0, glm::radians(5.0f) * deltaTime);
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) 
-				camera->rotate(0, glm::radians(-5.0f) * deltaTime);
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) 
-				camera->rotate(glm::radians(-5.0f) * deltaTime, 0);
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) 
-				camera->rotate(glm::radians(5.0f) * deltaTime, 0);
-			
+		proccessInput();
 
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-				keysPressed[sf::Keyboard::W] = true;
-			else
-				keysPressed[sf::Keyboard::W] = false;
 
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-				keysPressed[sf::Keyboard::S] = true;
-			else
-				keysPressed[sf::Keyboard::S] = false;
-
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-				keysPressed[sf::Keyboard::A] = true;
-			else
-				keysPressed[sf::Keyboard::A] = false;
-
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-				keysPressed[sf::Keyboard::D] = true;
-			else
-				keysPressed[sf::Keyboard::D] = false;
-			
-			if (e.type == sf::Event::MouseMoved)
-			{
-				if (firstMouseMove) {
-					firstMouseMove = false;
-					lastCursorX = e.mouseMove.x;
-					lastCursorY = e.mouseMove.y;
-				}
-
-				cursorMoveOffsetX = e.mouseMove.x - lastCursorX;
-				cursorMoveOffsetY = -e.mouseMove.y + lastCursorY;
-
-				lastCursorX = e.mouseMove.x;
-				lastCursorY = e.mouseMove.y;
-			}
-
-		}
-
+		// Game logic
 		if(keysPressed[sf::Keyboard::W])
 			camera->translate(camera->getDirection() * 0.01f * deltaTime);
 		if (keysPressed[sf::Keyboard::S])
@@ -212,11 +165,48 @@ void loop() {
 			camera->translate(glm::cross(glm::vec3(0, 1, 0), camera->getDirection()) * 0.01f * deltaTime);
 		if (keysPressed[sf::Keyboard::D])
 			camera->translate(glm::cross(glm::vec3(0, 1, 0), camera->getDirection()) * -0.01f * deltaTime);
-		
-		camera->rotate(cursorMoveOffsetX * MOUSE_SENSETIVITY, cursorMoveOffsetY * MOUSE_SENSETIVITY);
+		camera->rotate(-cursorDx * MOUSE_SENSETIVITY, cursorDy * MOUSE_SENSETIVITY);
 
+
+		// Draw
 		render();
+
+		int fps = 1000.0 / deltaTime;
+		wnd->setTitle(std::to_string(deltaTime));
 	}
+}
+
+void proccessInput() {
+	sf::Event e;
+	while (wnd->pollEvent(e))
+	{
+		if (e.type == sf::Event::Closed) wnd->close();
+	}
+
+	if (!wnd->hasFocus()) 
+	{
+		for (int key = sf::Keyboard::Key::A; key < sf::Keyboard::Key::KeyCount; key++)
+		{
+			sf::Keyboard::Key currKey = static_cast<sf::Keyboard::Key>(key);
+			keysPressed[currKey] = false;
+			cursorDx = 0;
+			cursorDy = 0;
+		}
+		return;
+	}
+
+	for (int key = sf::Keyboard::Key::A; key < sf::Keyboard::Key::KeyCount; key++)
+	{
+		sf::Keyboard::Key currKey = static_cast<sf::Keyboard::Key>(key);
+		keysPressed[currKey] = sf::Keyboard::isKeyPressed(currKey);
+	}
+
+	cursorDx = (float)wnd->getSize().x / 2 - sf::Mouse::getPosition(*wnd).x;
+	cursorDy = (float)wnd->getSize().y / 2 - sf::Mouse::getPosition(*wnd).y;
+	cursorDx *= MOUSE_SENSETIVITY;
+	cursorDy *= MOUSE_SENSETIVITY;
+
+	sf::Mouse::setPosition(sf::Vector2i(wnd->getSize().x / 2, wnd->getSize().y / 2), *wnd);
 }
 
 void render()
@@ -250,8 +240,8 @@ int main()
 sf::RenderWindow* wnd;
 Shader* unlitShader;
 sf::Clock* timer;
-engine::Camera* camera;
-engine::Chunk* chunk;
+Camera* camera;
+Chunk* chunk;
 std::map<std::string, unsigned int> textures;
 std::map<sf::Keyboard::Key, bool> keysPressed;
 float deltaTime;
@@ -260,8 +250,8 @@ int lastCursorY;
 bool firstMouseMove = true;
 unsigned int unlitVAO;
 unsigned int cubeVBO;
-int cursorMoveOffsetX;
-int cursorMoveOffsetY;
+float cursorDx;
+float cursorDy;
 
 float cubeVertices[288] = {
 	// positions            // normals             // texture coords

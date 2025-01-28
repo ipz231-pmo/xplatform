@@ -228,7 +228,7 @@ void proccessInput() {
 
 void render()
 {
-	glm::vec3 frontDir;
+	glm::vec3 frontDir = { };
 	frontDir.x = cos(yaw) * cos(pitch);
 	frontDir.y = sin(pitch);
 	frontDir.z = sin(yaw) * cos(pitch);
@@ -255,8 +255,10 @@ void render()
 	glClearColor(0.2f, 0.3f, 0.1f, 1.0f);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
+
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_STENCIL_TEST);
+
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_FRONT);
 	glFrontFace(GL_CW);

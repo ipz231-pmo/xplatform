@@ -1,5 +1,7 @@
 #include "main.hpp"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include <stbi/stb_image.h>
 
 void proccessInput();
 void update();
@@ -52,13 +54,6 @@ float cubeVertices[] = {
 };
 
 int main() {
-	for (int x = 0; x < 10; x++)
-	{
-		for (int z = 0; z < 10; z++)
-		{
-			cubesPosition.push_back(glm::vec3(x, 0, z));
-		}
-	}
 	for (int i = sf::Keyboard::A; i < sf::Keyboard::KeyCount; i++)
 	{
 		keysPressed[static_cast<sf::Keyboard::Key>(i)] = false;
@@ -72,6 +67,7 @@ int main() {
 
 
 	wnd = new sf::Window(sf::VideoMode(800, 600), "OutLine text", 7U, contextSettings);
+	wnd->setActive();
 	timer = new sf::Clock();
 
 	gladLoadGL();
@@ -79,29 +75,11 @@ int main() {
 	SColorShader = new Shader(SHADERS_DIR + "SColortShader.vert", SHADERS_DIR + "SColortShader.frag");
 	unlitShader = new Shader(SHADERS_DIR + "unlitShader.vert", SHADERS_DIR + "unlitShader.frag");
 	
-	wnd->setActive();
 	glEnable(GL_DEPTH_TEST);
 
 	stbi_set_flip_vertically_on_load(true);
 
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	{
-		int width, height, chanels;
-		unsigned char* data = stbi_load((TEXTURES_DIR + "dirt.png").c_str(), &width, &height, &chanels, 0);
-		if (!data) {
-			std::cout << "ERROR::TEXTURE::FAILED_TO_LOAD_DIRT_TEXTURE\n";
-		}
-		else
-		{
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-			glGenerateMipmap(GL_TEXTURE_2D);
-		}
-	}
+	texture = new Texture2D(TEXTURES_DIR + "dirt.png", GL_RGB, GL_RGBA, GL_NEAREST, GL_NEAREST);
 
 
 	glGenVertexArrays(1, &VAO);
@@ -144,7 +122,8 @@ void proccessInput() {
 
 	cursorDx = cursorLastPosX - sf::Mouse::getPosition(*wnd).x;
 	cursorDy = cursorLastPosY - sf::Mouse::getPosition(*wnd).y;
-	cursorDx *= -MOUSE_SENSETIVITY;
+	cursorDx *= -1;
+	cursorDx *= MOUSE_SENSETIVITY;
 	cursorDy *= MOUSE_SENSETIVITY;
 	cursorLastPosX = sf::Mouse::getPosition(*wnd).x;
 	cursorLastPosY = sf::Mouse::getPosition(*wnd).y;
@@ -188,8 +167,7 @@ void render()
 	unlitShader->setMat4("view", view);
 	unlitShader->setMat4("proj", proj);
 	unlitShader->setInt("tex0", 0);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture);
+	texture->use(GL_TEXTURE0);
 	unlitShader->unbind();
 
 	SColorShader->bind();
@@ -216,11 +194,11 @@ void render()
 
 	for (int i = 0; i < cubesPosition.size(); i++)
 	{
-
-		glm::vec3 cPos = cubesPosition[i];
-
 		if (selectedCube == i)
 			continue;
+		
+		glm::vec3 cPos = cubesPosition[i];
+
 
 		glClear(GL_STENCIL_BUFFER_BIT);
 		glStencilMask(0xFF);
@@ -326,6 +304,12 @@ float cursorDx, cursorDy, cursorLastPosX, cursorLastPosY;
 bool firstMouseMove = 1;
 
 float deltaTime;
-unsigned int texture;
-std::vector<glm::vec3> cubesPosition;
+Texture2D* texture;
+std::vector<glm::vec3> cubesPosition = 
+{
+	glm::vec3(0, 0, 0),
+	glm::vec3(0, 0, 1),
+	glm::vec3(1, 0, 1),
+	glm::vec3(1, 0, 0),
+};
 int selectedCube;

@@ -6,7 +6,7 @@ set(SRC
 )
 set(SRC_LIB 
 "toolkit/Shader.cpp"
-)
+ "toolkit/Texture2D.cpp")
 
 add_executable(${PROJECT_NAME} ${SRC} ${SRC_LIB})
 

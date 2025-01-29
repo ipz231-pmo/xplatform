@@ -3,103 +3,16 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stbi/stb_image.h>
 
-void proccessInput();
-void update();
-void render();
 
 
-float cubeVertices[] = {
-	// Back face
-	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // Bottom-left
-	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-right
-	 0.5f, -0.5f, -0.5f,  1.0f, 0.0f, // bottom-right         
-	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-right
-	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // bottom-left
-	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f, // top-left
-	// Front face
-	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-left
-	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // bottom-right
-	 0.5f,  0.5f,  0.5f,  1.0f, 1.0f, // top-right
-	 0.5f,  0.5f,  0.5f,  1.0f, 1.0f, // top-right
-	-0.5f,  0.5f,  0.5f,  0.0f, 1.0f, // top-left
-	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-left
-	// Left face
-	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // top-right
-	-0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-left
-	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // bottom-left
-	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // bottom-left
-	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-right
-	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // top-right
-	// Right face
-	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // top-left
-	 0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // bottom-right
-	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-right         
-	 0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // bottom-right
-	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // top-left
-	 0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-left     
-	 // Bottom face
-	 -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // top-right
-	  0.5f, -0.5f, -0.5f,  1.0f, 1.0f, // top-left
-	  0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // bottom-left
-	  0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // bottom-left
-	 -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-right
-	 -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // top-right
-	 // Top face
-	 -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, // top-left
-	  0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // bottom-right
-	  0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-right     
-	  0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // bottom-right
-	 -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, // top-left
-	 -0.5f,  0.5f,  0.5f,  0.0f, 0.0f  // bottom-left        
-};
+
+
 
 int main() {
-	for (int i = sf::Keyboard::A; i < sf::Keyboard::KeyCount; i++)
-	{
-		keysPressed[static_cast<sf::Keyboard::Key>(i)] = false;
-	}
 
-	sf::ContextSettings contextSettings;
-	contextSettings.depthBits = 24;
-	contextSettings.stencilBits = 8;
-	contextSettings.majorVersion = 4;
-	contextSettings.minorVersion = 6;
-
-
-	wnd = new sf::Window(sf::VideoMode(800, 600), "OutLine text", 7U, contextSettings);
-	wnd->setActive();
-	timer = new sf::Clock();
-
-	gladLoadGL();
-
-	SColorShader = new Shader(SHADERS_DIR + "SColortShader.vert", SHADERS_DIR + "SColortShader.frag");
-	unlitShader = new Shader(SHADERS_DIR + "unlitShader.vert", SHADERS_DIR + "unlitShader.frag");
-	
-	glEnable(GL_DEPTH_TEST);
-
-	stbi_set_flip_vertically_on_load(true);
-
-	texture = new Texture2D(TEXTURES_DIR + "dirt.png", GL_RGB, GL_RGBA, GL_NEAREST, GL_NEAREST);
-
-
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
-
-	// Shader Input Params
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), 0);
-	glEnableVertexAttribArray(0);
-	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-	//glEnableVertexAttribArray(1);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(2);
-
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
+	stbi_set_flip_vertically_on_load(true); // Stbi load textures flipped
+	initWindow();
+	initGL();
 
 	while (wnd->isOpen())
 	{
@@ -293,7 +206,6 @@ Shader* unlitShader;
 Shader* SColorShader;
 
 unsigned int VAO;
-unsigned int VBO;
 
 std::map<sf::Keyboard::Key, bool> keysPressed;
 
@@ -313,3 +225,112 @@ std::vector<glm::vec3> cubesPosition =
 	glm::vec3(1, 0, 0),
 };
 int selectedCube;
+
+
+
+void initWindow()
+{
+	for (int i = sf::Keyboard::A; i < sf::Keyboard::KeyCount; i++)
+	{
+		keysPressed[static_cast<sf::Keyboard::Key>(i)] = false;
+	}
+
+	sf::ContextSettings contextSettings;
+	contextSettings.depthBits = 24;
+	contextSettings.stencilBits = 8;
+	contextSettings.majorVersion = 4;
+	contextSettings.minorVersion = 6;
+
+
+	wnd = new sf::Window(sf::VideoMode(800, 600), "OutLine text", 7U, contextSettings);
+	wnd->setActive();
+	timer = new sf::Clock();
+}
+
+
+
+void initGL()
+{
+	gladLoadGL();
+
+	SColorShader = new Shader(SHADERS_DIR + "SColortShader.vert", SHADERS_DIR + "SColortShader.frag");
+	unlitShader = new Shader(SHADERS_DIR + "unlitShader.vert", SHADERS_DIR + "unlitShader.frag");
+
+
+
+	texture = new Texture2D(TEXTURES_DIR + "dirt.png", GL_RGB, GL_RGBA, GL_NEAREST, GL_NEAREST);
+
+	initVertexArray();
+	
+}
+
+void initVertexArray()
+{
+	std::vector<float> cubeVertices = {
+		// Back face
+		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // Bottom-left
+		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-right
+		 0.5f, -0.5f, -0.5f,  1.0f, 0.0f, // bottom-right         
+		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-right
+		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // bottom-left
+		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f, // top-left
+		// Front face
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-left
+		 0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // bottom-right
+		 0.5f,  0.5f,  0.5f,  1.0f, 1.0f, // top-right
+		 0.5f,  0.5f,  0.5f,  1.0f, 1.0f, // top-right
+		-0.5f,  0.5f,  0.5f,  0.0f, 1.0f, // top-left
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-left
+		// Left face
+		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // top-right
+		-0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-left
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // bottom-left
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // bottom-left
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-right
+		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // top-right
+		// Right face
+		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // top-left
+		 0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // bottom-right
+		 0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-right         
+		 0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // bottom-right
+		 0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // top-left
+		 0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-left     
+		 // Bottom face
+		 -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // top-right
+		  0.5f, -0.5f, -0.5f,  1.0f, 1.0f, // top-left
+		  0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // bottom-left
+		  0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // bottom-left
+		 -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-right
+		 -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // top-right
+		 // Top face
+		 -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, // top-left
+		  0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // bottom-right
+		  0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-right     
+		  0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // bottom-right
+		 -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, // top-left
+		 -0.5f,  0.5f,  0.5f,  0.0f, 0.0f  // bottom-left        
+	};
+
+	unsigned int VBO;
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, cubeVertices.size() * sizeof(float), cubeVertices.data(), GL_STATIC_DRAW);
+
+	// Shader's Input Params
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), 0);
+	glEnableVertexAttribArray(0);
+
+	// Not Currently used (for normal vectors)
+	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float))); 
+	//glEnableVertexAttribArray(1);
+
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(2);
+
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+}

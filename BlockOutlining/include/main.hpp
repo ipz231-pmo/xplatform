@@ -12,9 +12,18 @@
 #include <glm/glm.hpp>
 
 
-
 #include <Shader.hpp>
 #include <Texture2D.hpp>
+
+
+void initWindow();
+void initGL();
+void initVertexArray();
+
+void proccessInput();
+void update();
+void render();
+
 
 const std::string PROJECT_DIR = "../";
 const std::string SHADERS_DIR = PROJECT_DIR + "shaders/";
@@ -31,7 +40,6 @@ extern Shader* unlitShader;
 extern Shader* SColorShader;
 
 extern unsigned int VAO;
-extern unsigned int VBO;
 
 extern std::map<sf::Keyboard::Key, bool> keysPressed;
 

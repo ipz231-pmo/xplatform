@@ -1,19 +1,20 @@
 #pragma once
 
-#include <glad/glad.h>
-#include <SFML/Graphics.hpp>
-#include <Shader.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/glm.hpp>
-#include <sys/stat.h>
-#include <chrono>
-#include <map>
-#define STB_IMAGE_IMPLEMENTATION
-#include <stbi/stb_image.h>
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <vector>
+#include <map>
+
+#include <glad/glad.h>
+#include <SFML/Graphics.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/glm.hpp>
+
+
+
+#include <Shader.hpp>
+#include <Texture2D.hpp>
 
 const std::string PROJECT_DIR = "../";
 const std::string SHADERS_DIR = PROJECT_DIR + "shaders/";
@@ -44,7 +45,7 @@ extern bool firstMouseMove;
 
 extern float deltaTime;
 
-extern unsigned int texture;
+extern Texture2D* texture;
 
 extern std::vector<glm::vec3> cubesPosition;
 

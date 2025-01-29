@@ -4,7 +4,36 @@
 #include <stbi/stb_image.h>
 
 
+void DrawBlock(glm::vec3 pos, Shader *shader)
+{
+	shader->bind();
+	glm::mat4 model = glm::translate(glm::mat4(1), glm::vec3(pos.x, pos.y, pos.z));
+	unlitShader->setMat4("model", model);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+}
 
+void DrawOutlinedBlock(glm::vec3 pos, Shader* textureShader, Shader* colorShader)
+{
+	glStencilMask(0xFF);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+	glStencilFunc(GL_ALWAYS, 1, 0xFF);
+	unlitShader->bind();
+
+	glm::mat4 model;
+
+	model = glm::translate({ 1.0f }, pos);
+	model = glm::scale(model, glm::vec3(1.0f - BORDER_THICKNESS, 1.0f - BORDER_THICKNESS, 1.0f - BORDER_THICKNESS));
+	unlitShader->setMat4("model", model);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+	glStencilMask(0xFF);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+	SColorShader->bind();
+	SColorShader->setMat4("model", glm::translate({ 1.0f }, pos));
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+}
 
 
 
@@ -86,7 +115,7 @@ void render()
 	SColorShader->bind();
 	SColorShader->setMat4("view", view);
 	SColorShader->setMat4("proj", proj);
-	SColorShader->setVec3("Color", glm::vec3(0.0f, 0.0f, 0.0f));
+	SColorShader->setVec3("Color", glm::vec3(0));
 	SColorShader->unbind();
 
 
@@ -94,78 +123,25 @@ void render()
 	glClearColor(0.2f, 0.3f, 0.1f, 1.0f);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_STENCIL_TEST);
-
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_FRONT);
 	glFrontFace(GL_CW);
-	
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_STENCIL_TEST);
+	glStencilMask(0x00);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+	glStencilFunc(GL_ALWAYS, 1, 0xFF);
 
 	glBindVertexArray(VAO);
 
+	unlitShader->bind();
 	for (int i = 0; i < cubesPosition.size(); i++)
 	{
-		if (selectedCube == i)
-			continue;
-		
-		glm::vec3 cPos = cubesPosition[i];
-
-
-		glClear(GL_STENCIL_BUFFER_BIT);
-		glStencilMask(0xFF);
-		glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-		unlitShader->bind();
-		glm::mat4 model(1.0f);
-		model = glm::translate(model, cPos);
-		unlitShader->setMat4("model", model);
-
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-
-		glStencilMask(0xFF);
-		glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+		if (selectedCube == i) continue;
+		DrawBlock(cubesPosition[i], unlitShader);
 	}
-
-	glm::vec3 cPos = cubesPosition[selectedCube];
-	glStencilMask(0xFF);
-	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-	glStencilFunc(GL_ALWAYS, 1, 0xFF);
-
-	unlitShader->bind();
-
-
-
-
-	glm::mat4 model;
-
-	model = glm::translate({1.0f}, cPos);
-	model = glm::scale(model, glm::vec3(1.0f - BORDER_THICKNESS, 1.0f - BORDER_THICKNESS, 1.0f));
-	unlitShader->setMat4("model", model);
-	glDrawArrays(GL_TRIANGLES, 0, 12);
-
-
-	model = glm::translate({ 1.0f }, cPos);
-	model = glm::scale(model, glm::vec3(1.0f, 1.0f - BORDER_THICKNESS, 1.0f - BORDER_THICKNESS));
-	unlitShader->setMat4("model", model);
-	glDrawArrays(GL_TRIANGLES, 12, 12);
-
-	model = glm::translate({ 1.0f }, cPos);
-	model = glm::scale(model, glm::vec3(1.0f - BORDER_THICKNESS, 1, 1.0f - BORDER_THICKNESS));
-	unlitShader->setMat4("model", model);
-	glDrawArrays(GL_TRIANGLES, 24, 12);
-
-	glStencilMask(0x00);
-	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-	SColorShader->bind();
-	SColorShader->setMat4("model", glm::translate(glm::mat4(1.0f), cPos));
-	glDrawArrays(GL_TRIANGLES, 0, 36);
-	glClear(GL_STENCIL_BUFFER_BIT);
-
-
-
-	glStencilMask(0xFF);
+	
+	DrawOutlinedBlock(cubesPosition[selectedCube], unlitShader, SColorShader);
 
 	wnd->display();
 }

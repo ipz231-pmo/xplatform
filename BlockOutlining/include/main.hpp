@@ -20,6 +20,8 @@ void initWindow();
 void initGL();
 void initVertexArray();
 
+
+
 void proccessInput();
 void update();
 void render();

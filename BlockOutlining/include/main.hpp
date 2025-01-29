@@ -2,7 +2,7 @@
 
 #include <glad/glad.h>
 #include <SFML/Graphics.hpp>
-#include <glh/Shader.hpp>
+#include <Shader.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/glm.hpp>
@@ -15,9 +15,9 @@
 #include <cmath>
 #include <vector>
 
-const std::string ASSETS_DIR = "../assets/";
-const std::string SHADERS_DIR = ASSETS_DIR + "shaders/";
-const std::string TEXTURES_DIR = ASSETS_DIR + "textures/";
+const std::string PROJECT_DIR = "../";
+const std::string SHADERS_DIR = PROJECT_DIR + "shaders/";
+const std::string TEXTURES_DIR = PROJECT_DIR + "textures/";
 
 const float MOUSE_SENSETIVITY = 0.01f;
 const float MOVE_SPEED = 0.05f;

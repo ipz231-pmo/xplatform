@@ -1,60 +1,9 @@
 #include "main.hpp"
 
-// Funcion declarations
+
 void proccessInput();
 void update();
 void render();
-
-//float cubeVertices[288] = {
-//	// positions            // normals             // texture coords
-//	// backface
-//	-0.5f, -0.5f, -0.5f,    0.0f, 0.0f, -1.0f,     1.0f, 0.0f, // left bottom    -> right bottom
-//	 0.5f, -0.5f, -0.5f,    0.0f, 0.0f, -1.0f,     0.0f, 0.0f, // right bottom   -> left bottom
-//	 0.5f,  0.5f, -0.5f,    0.0f, 0.0f, -1.0f,     0.0f, 1.0f, // right up		 -> left top
-//	 0.5f,  0.5f, -0.5f,    0.0f, 0.0f, -1.0f,     0.0f, 1.0f, // right top		 -> left top
-//	-0.5f,  0.5f, -0.5f,    0.0f, 0.0f, -1.0f,     1.0f, 1.0f, // left top		 -> right top
-//	-0.5f, -0.5f, -0.5f,    0.0f, 0.0f, -1.0f,     1.0f, 0.0f, // left bottom	 -> right bottom
-//
-//	// frontface
-//	-0.5f, -0.5f,  0.5f,    0.0f, 0.0f, 1.0f,      0.0f, 0.0f,
-//	 0.5f, -0.5f,  0.5f,    0.0f, 0.0f, 1.0f,      1.0f, 0.0f,
-//	 0.5f,  0.5f,  0.5f,    0.0f, 0.0f, 1.0f,      1.0f, 1.0f,
-//	 0.5f,  0.5f,  0.5f,    0.0f, 0.0f, 1.0f,      1.0f, 1.0f,
-//	-0.5f,  0.5f,  0.5f,    0.0f, 0.0f, 1.0f,      0.0f, 1.0f,
-//	-0.5f, -0.5f,  0.5f,    0.0f, 0.0f, 1.0f,      0.0f, 0.0f,
-//
-//	// leftface
-//	-0.5f,  0.5f,  0.5f,   -1.0f, 0.0f, 0.0f,      1.0f, 1.0f,
-//	-0.5f,  0.5f, -0.5f,   -1.0f, 0.0f, 0.0f,      0.0f, 1.0f,
-//	-0.5f, -0.5f, -0.5f,   -1.0f, 0.0f, 0.0f,      0.0f, 0.0f,
-//	-0.5f, -0.5f, -0.5f,   -1.0f, 0.0f, 0.0f,      0.0f, 0.0f,
-//	-0.5f, -0.5f,  0.5f,   -1.0f, 0.0f, 0.0f,      1.0f, 0.0f,
-//	-0.5f,  0.5f,  0.5f,   -1.0f, 0.0f, 0.0f,      1.0f, 1.0f,
-//
-//	// rightface
-//	 0.5f,  0.5f,  0.5f,    1.0f, 0.0f, 0.0f,      1.0f, 1.0f,
-//	 0.5f,  0.5f, -0.5f,    1.0f, 0.0f, 0.0f,      0.0f, 1.0f,
-//	 0.5f, -0.5f, -0.5f,    1.0f, 0.0f, 0.0f,      0.0f, 0.0f,
-//	 0.5f, -0.5f, -0.5f,    1.0f, 0.0f, 0.0f,      0.0f, 0.0f,
-//	 0.5f, -0.5f,  0.5f,    1.0f, 0.0f, 0.0f,      1.0f, 0.0f,
-//	 0.5f,  0.5f,  0.5f,    1.0f, 0.0f, 0.0f,      1.0f, 1.0f,
-//
-//	 // downface
-//	-0.5f, -0.5f, -0.5f,    0.0f, -1.0f, 0.0f,     0.0f, 1.0f,
-//	 0.5f, -0.5f, -0.5f,    0.0f, -1.0f, 0.0f,     1.0f, 1.0f,
-//	 0.5f, -0.5f,  0.5f,    0.0f, -1.0f, 0.0f,     1.0f, 0.0f,
-//	 0.5f, -0.5f,  0.5f,    0.0f, -1.0f, 0.0f,     1.0f, 0.0f,
-//	-0.5f, -0.5f,  0.5f,    0.0f, -1.0f, 0.0f,     0.0f, 0.0f,
-//	-0.5f, -0.5f, -0.5f,    0.0f, -1.0f, 0.0f,     0.0f, 1.0f,
-//
-//	// topface
-//	-0.5f,  0.5f, -0.5f,    0.0f, 1.0f, 0.0f,      0.0f, 1.0f,
-//	 0.5f,  0.5f, -0.5f,    0.0f, 1.0f, 0.0f,      1.0f, 1.0f,
-//	 0.5f,  0.5f,  0.5f,    0.0f, 1.0f, 0.0f,      1.0f, 0.0f,
-//	 0.5f,  0.5f,  0.5f,    0.0f, 1.0f, 0.0f,      1.0f, 0.0f,
-//	-0.5f,  0.5f,  0.5f,    0.0f, 1.0f, 0.0f,      0.0f, 0.0f,
-//	-0.5f,  0.5f, -0.5f,    0.0f, 1.0f, 0.0f,      0.0f, 1.0f
-//};
 
 
 float cubeVertices[] = {
@@ -120,7 +69,6 @@ int main() {
 	contextSettings.stencilBits = 8;
 	contextSettings.majorVersion = 4;
 	contextSettings.minorVersion = 6;
-	//contextSettings.antialiasingLevel = 4;
 
 
 	wnd = new sf::Window(sf::VideoMode(800, 600), "OutLine text", 7U, contextSettings);
@@ -273,42 +221,7 @@ void render()
 
 		if (selectedCube == i)
 			continue;
-		/*{
-			glStencilMask(0xFF);
-			glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-			glStencilFunc(GL_ALWAYS, 1, 0xFF);
 
-			unlitShader->bind();
-
-			glm::mat4 model(1.0f);
-
-			model = { 1.0f };
-			model = glm::translate(model, cPos);
-			model = glm::scale(model, glm::vec3(1.0f - BORDER_THICKNESS, 1.0f - BORDER_THICKNESS, 1.0f));
-			unlitShader->setMat4("model", model);
-			glDrawArrays(GL_TRIANGLES, 0, 12);
-
-
-			model = { 1.0f };
-			model = glm::translate(model, cPos);
-			model = glm::scale(model, glm::vec3(1.0f, 1.0f - BORDER_THICKNESS, 1.0f - BORDER_THICKNESS));
-			unlitShader->setMat4("model", model);
-			glDrawArrays(GL_TRIANGLES, 12, 12);
-
-			model = { 1.0f };
-			model = glm::translate(model, cPos);
-			model = glm::scale(model, glm::vec3(1.0f - BORDER_THICKNESS, 1, 1.0f - BORDER_THICKNESS));
-			unlitShader->setMat4("model", model);
-			glDrawArrays(GL_TRIANGLES, 24, 12);
-
-			glStencilMask(0x00);
-			glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-			SColorShader->bind();
-			SColorShader->setMat4("model", glm::translate(glm::mat4(1.0f), cPos));
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-			glClear(GL_STENCIL_BUFFER_BIT);
-			continue;
-		}*/
 		glClear(GL_STENCIL_BUFFER_BIT);
 		glStencilMask(0xFF);
 		glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
@@ -406,11 +319,9 @@ unsigned int VBO;
 
 std::map<sf::Keyboard::Key, bool> keysPressed;
 
-// Camera
 float yaw = 3.1415, pitch;
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 2.0f);
 
-// Cursor 
 float cursorDx, cursorDy, cursorLastPosX, cursorLastPosY;
 bool firstMouseMove = 1;
 

@@ -1,4 +1,4 @@
-#include "glh/Shader.hpp"
+#include "Shader.hpp"
 
 Shader::Shader(std::string vertexFile, std::string fragmentFile)
 {

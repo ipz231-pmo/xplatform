@@ -2,11 +2,7 @@
 
 void game::init()
 {
-	left = false;
-	top = false;
-	right = false;
-	down = false;
-	move = false;
+	dir = None;
 	moveProcess = 0;
 
 
@@ -16,17 +12,17 @@ void game::init()
 
 void game::update(double deltaTime)
 {
-	if (!move) return;
+	if (dir == None) return;
 	if (gameOver) return;
 	moveProcess += deltaTime;
 
 	if (moveProcess > MOVE_TIME)
 	{
 		moveProcess -= MOVE_TIME;
-		if (top) head.y--;
-		if (left) head.x--;
-		if (down) head.y++;
-		if (right) head.x++;
+		if (dir == Up) head.y--;
+		if (dir == Left) head.x--;
+		if (dir == Down) head.y++;
+		if (dir == Right) head.x++;
 
 		if (head.x < 1) head.x = 1;
 		if (head.y < 1) head.y = 1;
@@ -36,7 +32,7 @@ void game::update(double deltaTime)
 
 }
 
-bool game::left, game::top, game::right, game::down, game::move;
+Direction game::dir;
 double game::moveProcess;
 
 

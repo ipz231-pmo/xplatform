@@ -14,39 +14,19 @@ void input::handle()
 #ifdef _WINDOWS
 	if (GetAsyncKeyState('W') & 0x01) 
 	{
-		game::move = true;
-
-		game::left = false;
-		game::top = true;
-		game::right = false;
-		game::down = false;
+		game::dir = Up;
 	}
 	if (GetAsyncKeyState('A') & 0x01) 
 	{
-		game::move = true;
-
-		game::left = true;
-		game::top = false;
-		game::right = false;
-		game::down = false;
+		game::dir = Left;
 	}
 	if (GetAsyncKeyState('S') & 0x01) 
 	{
-		game::move = true;
-
-		game::left = false;
-		game::top = false;
-		game::right = false;
-		game::down = true;
+		game::dir = Down;
 	}
 	if (GetAsyncKeyState('D') & 0x01) 
 	{
-		game::move = true;
-
-		game::left = false;
-		game::top = false;
-		game::right = true;
-		game::down = false;
+		game::dir = Right;
 	}
 #else
 	if (_kbhit())
@@ -54,39 +34,19 @@ void input::handle()
 		char key = _getch();
 		if (key == 'w')
 		{
-			game::move = true;
-
-			game::left = false;
-			game::top = true;
-			game::right = false;
-			game::down = false;
+			game::dir = Up;
 		}
 		if (key == 'a')
 		{
-			game::move = true;
-
-			game::left = true;
-			game::top = false;
-			game::right = false;
-			game::down = false;
+			game::dir = Left;
 		}
 		if (key == 's')
 		{
-			game::move = true;
-
-			game::left = false;
-			game::top = false;
-			game::right = false;
-			game::down = true;
+			game::dir = Down;
 		}
 		if (key == 'd')
 		{
-			game::move = true;
-
-			game::left = false;
-			game::top = false;
-			game::right = true;
-			game::down = false;
+			game::dir = Right;
 		}
 	}
 #endif

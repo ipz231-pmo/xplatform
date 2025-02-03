@@ -8,7 +8,7 @@ namespace game
 	const int HEIGHT = 20;
 	const double MOVE_TIME = 2000;
 
-	extern bool left, top, right, down, move;
+	extern Direction dir;
 	extern double moveProcess;
 
 	extern bool gameOver;

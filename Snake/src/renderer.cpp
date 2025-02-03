@@ -8,16 +8,46 @@
 #endif // _WINDOWS
 
 
-void renderer::init()
+/*
+	unnamed namespace is used to create a local compiling 
+	function (not global) that cannot be used outside this file
+*/ 
+namespace
 {
 #ifdef _WINDOWS
-	HANDLE hndl = GetStdHandle(STD_OUTPUT_HANDLE);
-	CONSOLE_CURSOR_INFO ci = { };
-	GetConsoleCursorInfo(hndl, &ci);
-	ci.bVisible = 0;
-	SetConsoleCursorInfo(hndl, &ci);
+	void display(char* buffer, int size)
+	{
+		HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+		DWORD wr;
+		WriteConsoleOutputCharacterA(consoleHandle, buffer, size, { 0, 0 }, &wr);
+	}
+#else
+	void display(char* buffer, int size)
+	{
+		system("clear");
+		std::cout << buffer;
+	}
 #endif // _WINDOWS
 }
+
+
+#ifdef _WINDOWS
+	void renderer::init()
+	{
+		HANDLE hndl = GetStdHandle(STD_OUTPUT_HANDLE);
+		CONSOLE_CURSOR_INFO ci = { };
+		GetConsoleCursorInfo(hndl, &ci);
+		ci.bVisible = 0;
+		SetConsoleCursorInfo(hndl, &ci);
+	}
+#else
+	void renderer::init()
+	{
+
+	}
+#endif // _WINDOWS
+
+
 
 void renderer::draw()
 {
@@ -41,18 +71,9 @@ void renderer::draw()
 
 	buffer[priv::code(game::head)] = '1';
 
-
-#ifdef _WINDOWS
-	HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-	DWORD wr;
-	WriteConsoleOutputCharacterA(consoleHandle, buffer, WIDTH * HEIGHT, { 0, 0 }, &wr);
-#else
-	system("clear");
-	std::cout << buffer;
-#endif 
+	display(buffer, WIDTH * HEIGHT);
 	
 	delete[] buffer;
-
 }
 
 int renderer::priv::code(int x, int y) { return y * WIDTH + x; }

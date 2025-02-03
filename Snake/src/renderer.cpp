@@ -1,12 +1,22 @@
 #include "renderer.h"
+#include "game.h"
+
+#ifdef _WINDOWS
+#include <Windows.h>
+#else
+#include <iostream>
+#endif // _WINDOWS
+
 
 void renderer::init()
 {
+#ifdef _WINDOWS
 	HANDLE hndl = GetStdHandle(STD_OUTPUT_HANDLE);
 	CONSOLE_CURSOR_INFO ci = { };
 	GetConsoleCursorInfo(hndl, &ci);
 	ci.bVisible = 0;
 	SetConsoleCursorInfo(hndl, &ci);
+#endif // _WINDOWS
 }
 
 void renderer::draw()
@@ -32,12 +42,15 @@ void renderer::draw()
 	buffer[priv::code(game::head)] = '1';
 
 
-	//system("clear");
+#ifdef _WINDOWS
 	HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-
 	DWORD wr;
 	WriteConsoleOutputCharacterA(consoleHandle, buffer, WIDTH * HEIGHT, { 0, 0 }, &wr);
-	//std::cout << buffer;
+#else
+	system("clear");
+	std::cout << buffer;
+#endif 
+	
 	delete[] buffer;
 
 }

@@ -1,10 +1,9 @@
-#include <Windows.h>
 
 #include "game.h"
 #include "renderer.h"
 #include "input.h"
 
-
+#include <ctime>
 
 int main(int argc, char* argv[])
 {
@@ -14,11 +13,11 @@ int main(int argc, char* argv[])
 
 	clock_t start = clock();
 
-	while (1)
+
+	while (!game::gameOver)
 	{
 		clock_t end = clock();
 		double deltaTime = (double)(end - start) / CLOCKS_PER_SEC;
-
 
 		input::handle();
 		game::update(deltaTime);

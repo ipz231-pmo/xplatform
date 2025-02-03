@@ -17,6 +17,7 @@ void game::init()
 void game::update(double deltaTime)
 {
 	if (!move) return;
+	if (gameOver) return;
 	moveProcess += deltaTime;
 
 	if (moveProcess > MOVE_TIME)
@@ -41,3 +42,6 @@ double game::moveProcess;
 
 Point game::head;
 bool game::gameOver;
+std::vector<Point> game::tail;
+int game::score;
+

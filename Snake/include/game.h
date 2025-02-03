@@ -1,5 +1,6 @@
 #pragma once
 #include <typedef.h>
+#include <vector>
 
 namespace game
 {
@@ -12,6 +13,8 @@ namespace game
 
 	extern bool gameOver;
 	extern Point head;
+	extern std::vector<Point> tail;
+	extern int score;
 
 
 	void init();

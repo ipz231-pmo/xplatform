@@ -1,9 +1,6 @@
 #pragma once
-#include <Windows.h>
-#include <iostream>
 
 #include <typedef.h>
-#include <game.h>
 
 namespace renderer
 {
@@ -18,5 +15,4 @@ namespace renderer
 		int code(int x, int y);
 		int code(Point p);
 	}
-
 }

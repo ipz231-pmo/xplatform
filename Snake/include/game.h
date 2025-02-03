@@ -19,4 +19,10 @@ namespace game
 
 	void init();
 	void update(double deltaTime);
+
+	namespace priv
+	{
+		void move();
+	}
+
 }

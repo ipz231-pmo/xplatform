@@ -9,9 +9,11 @@
 
 #include <game.h>
 
+
+#ifdef _WINDOWS
 void input::handle()
 {
-#ifdef _WINDOWS
+
 	if (GetAsyncKeyState('W') & 0x01) 
 	{
 		game::dir = Up;
@@ -28,7 +30,10 @@ void input::handle()
 	{
 		game::dir = Right;
 	}
+}
 #else
+void input::handle()
+{
 	if (_kbhit())
 	{
 		char key = _getch();
@@ -49,5 +54,5 @@ void input::handle()
 			game::dir = Right;
 		}
 	}
-#endif
 }
+#endif // _WINDOWS

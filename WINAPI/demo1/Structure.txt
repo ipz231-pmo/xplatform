@@ -1,0 +1,45 @@
+
+Modules:
+	engine-window
+	engine-graphics
+
+
+
+
+SceneManage:
+	CurrentScene
+	load
+
+Scene:
+	List < Object
+
+
+Object:
+	List < Component
+
+obj.add_component
+obj.add_component
+obj.add_component
+
+
+
+Component:
+	Start
+	Update
+
+
+ViewMatrix:
+	cameraPos, get/set prop 
+	cameraDir, Euler angles
+
+ProjMatrix:
+	fov, 
+	width, 
+	heigh, 
+	zNear, 
+	zFar, 
+	ortho/perspective
+
+
+
+	// fov, lookAt, width, height, ortho/perspective

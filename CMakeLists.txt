@@ -6,7 +6,7 @@ add_subdirectory("libs")
 
 add_subdirectory("BlockOutlining")
 add_subdirectory("Snake")
-
+add_subdirectory("WINAPI")
 
 ###################
 # FOR TIME THAT ARE NOT NOW (OR NEVER, idk) 

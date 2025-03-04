@@ -1,11 +1,10 @@
 #version 330 core
 
-// Uniforms block
-uniform vec3 Color;
+in vec2 TexPos;
 
-// Out block
 out vec4 FragColor;
 
+uniform sampler2D tex0;
 
 void main()
 {

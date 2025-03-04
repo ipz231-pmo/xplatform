@@ -1,52 +1,71 @@
-#include "Window.hpp"
+#ifndef UNICODE
+#define UNICODE
+#endif // !UNICODE
 
-BOOL		Window::done		= false;
-WNDCLASSW	Window::wc			= { };
-HWND		Window::hwnd		= NULL;
-HDC			Window::hdc			= NULL;
-HGLRC		Window::hrc			= NULL;
+#include <glad/glad.h>
+
+#include <Windows.h>
+
+#include <chrono>
+#include <string>
+#include <iostream>
+#include <sstream>
+#include <iomanip>
+#include <time.h>
+
+#include "main.hpp"
+#include "Time.hpp"
+
+#include <Shader.hpp>
 
 
-LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT uMsg, WPARAM wp, LPARAM lp)
+float vertices[] =
 {
-	switch (uMsg)
-	{
-	case WM_PAINT:
-	{
-		PAINTSTRUCT ps;
-		HDC HDC = BeginPaint(hwnd, &ps);
+	-0.5, -0.5, 0.1,
+	0.5, -0.5, 0.1,
+	0.5, 0.5, 0.1
+};
 
-		FillRect(HDC, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
-
-		EndPaint(hwnd, &ps);
-		return 0;
-	}
-	case WM_DESTROY:
-	{
-		PostQuitMessage(0);
-		return 0;
-	}
-	}
-	return DefWindowProcW(hwnd, uMsg, wp, lp);
+#ifdef _DEBUG
+void ShowDebugConsole() {
+	AllocConsole();
+	FILE* file;
+	freopen_s(&file, "CONOUT$", "w", stdout);
+	freopen_s(&file, "CONOUT$", "w", stderr);
+	freopen_s(&file, "CONIN$", "r", stdin);
 }
+#endif // _DEBUG
 
 
-BOOL Window::createWindow(wchar_t* title, int width, int height)
+
+
+int wWinMain(HINSTANCE hIns, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
+
+#ifdef _DEBUG
+	ShowDebugConsole();
+#endif // DEBUG
+
+	
+
+	
+	hInstance = hIns;
+
+
 	DWORD       dwExStyle;              // Window Extended Style
 	DWORD       dwStyle;                // Window Style
 	RECT        WindowRect;             // Grabs Rectangle Upper Left / Lower Right Values
 	WindowRect.left = (long)0;            // Set Left Value To 0
-	WindowRect.right = (long)width;       // Set Right Value To Requested Width
+	WindowRect.right = (long)800;       // Set Right Value To Requested Width
 	WindowRect.top = (long)0;             // Set Top Value To 0
-	WindowRect.bottom = (long)height;     // Set Bottom Value To Requested Height
+	WindowRect.bottom = (long)600;     // Set Bottom Value To Requested Height
 
 
 	wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;			// Redraw On Size, And Own DC For Window.
-	wc.lpfnWndProc = WndProc;								// WndProc Handles Messages
+	wc.lpfnWndProc = DefWindowProc;								// WndProc Handles Messages
 	wc.cbClsExtra = 0;										// No Extra Window Data
 	wc.cbWndExtra = 0;										// No Extra Window Data
-	wc.hInstance = App::hInstance;							// Set The Instance
+	wc.hInstance = hInstance;							// Set The Instance
 	wc.hIcon = LoadIconW(NULL, IDI_WINLOGO);				// Load The Default Icon
 	wc.hCursor = LoadCursorW(NULL, IDC_ARROW);				// Load The Arrow Pointer
 	wc.hbrBackground = NULL;								// No Background Required For GL
@@ -70,7 +89,7 @@ BOOL Window::createWindow(wchar_t* title, int width, int height)
 	if (!(hwnd = CreateWindowExW(
 		dwExStyle,                          // Extended Style For The Window
 		WND_CLASS_NAME.c_str(),             // Class Name
-		title,                              // Window Title
+		L"title",                              // Window Title
 		dwStyle |                           // Defined Window Style
 		WS_CLIPSIBLINGS |                   // Required Window Style
 		WS_CLIPCHILDREN,                    // Required Window Style
@@ -79,9 +98,9 @@ BOOL Window::createWindow(wchar_t* title, int width, int height)
 		WindowRect.bottom - WindowRect.top, // Calculate Window Height
 		NULL,                               // No Parent Window
 		NULL,                               // No Menu
-		App::hInstance,                          // Instance
+		hInstance,                          // Instance
 		NULL)								// Dont Pass Anything To WM_CREATE
-		))                             
+		))
 	{
 		MessageBox(NULL, L"Window Creation Error.", L"ERROR", MB_OK);
 		return FALSE;                               // Return FALSE
@@ -152,5 +171,68 @@ BOOL Window::createWindow(wchar_t* title, int width, int height)
 	SetForegroundWindow(hwnd);                      // Slightly Higher Priority
 	SetFocus(hwnd);                                 // Sets Keyboard Focus To The Window
 
-	return TRUE;
+
+
+	Shader shader(SHADERS_DIRECTORY + "1.vert", SHADERS_DIRECTORY + "1.frag");
+
+	unsigned int VAO, VBO;
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	// Shader Input Params
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
+
+
+	MSG msg = { };
+
+
+	while (!shouldClose)
+	{
+		Time::calcDeltaTime();
+
+		while (PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE))
+		{
+			if (msg.message == WM_QUIT)
+			{
+				shouldClose = TRUE;
+			}
+			else
+			{
+				TranslateMessage(&msg);
+				DispatchMessage(&msg);
+			}
+		}
+
+		shader.bind();
+		shader.setVec3("Color", glm::vec3(1.0, 1.0, 1.0));
+
+		// Draw here
+		glClearColor(0.5, 0, 0, 1.0);
+
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		glBindVertexArray(VAO);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+
+		SwapBuffers(hdc);
+	}
+	return 0;
+
 }
+
+
+HINSTANCE hInstance;
+BOOL shouldClose;
+WNDCLASSW wc;
+HWND hwnd;
+HDC hdc;
+HGLRC hrc;
